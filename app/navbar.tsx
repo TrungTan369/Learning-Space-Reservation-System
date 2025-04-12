@@ -2,21 +2,41 @@ import Image from "next/image";
 import { Bell, MessageCircle, ChevronDown, Search } from "lucide-react";
 import { Menu } from '@headlessui/react';
 import React, { useState, useRef } from 'react';
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
+	const pathname = usePathname();
+
 	return (
 		<nav className="sticky top-0 left-0 w-full bg-transparent backdrop-blur-md shadow-sm z-50">
 			<div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
 
 				<div className="flex items-center space-x-6">
 					<Image src="/images/logo.png" alt="BK Logo" width={32} height={32} />
-					<a href="/" className="hover:underline">Trang chủ</a>
-					<a href="#" className="hover:underline">Lịch của tôi</a>
-					<a href="/rooms" className="hover:underline">Xem phòng</a>
-					<a href="#" className="hover:underline">Thông báo chung</a>
+					<a
+						href="/"
+						className={`hover:underline ${pathname === '/' ? 'font-semibold text-blue-600 underline' : ''
+							}`}
+					>
+						Trang chủ
+					</a>
+					<a href="/"
+						className={`hover:underline ${pathname === '/calendar' ? 'font-semibold text-blue-600 underline' : ''
+							}`}>
+						Lịch của tôi
+					</a>
+					<a href="/rooms"
+						className={`hover:underline ${pathname === '/rooms' ? 'font-semibold text-blue-600 underline' : ''
+							}`}>
+						Xem phòng
+					</a>
+					<a href="/"
+						className={`hover:underline ${pathname === '/notice' ? 'font-semibold text-blue-600 underline' : ''
+							}`}>
+						Thông báo chung
+					</a>
 				</div>
 
 				<div className="flex items-center space-x-4">

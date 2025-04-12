@@ -13,7 +13,7 @@ export default function LoginForm() {
     };
 
     return (
-        <div className="bg-white shadow-lg rounded-lg p-12 w-full max-w-lg text-center bg-white/70 backdrop-blur-md rounded-xl shadow-lg">
+        <div className="bg-white shadow-lg rounded-lg p-12 w-full max-w-lg bg-white/70 backdrop-blur-md rounded-xl shadow-lg">
             <Image
                 src="/images/logo.png"
                 alt="BK Logo"
@@ -27,7 +27,7 @@ export default function LoginForm() {
 
             <button
                 onClick={() => setSelected('user')}
-                className="w-full border border-[#0083b0] text-sky-700 px-4 py-2 mb-2 rounded hover:bg-sky-100 transition-colors duration-200"
+                className="w-full border border-[#0083b0] text-sky-700 px-4 py-2 mb-2 rounded hover:bg-sky-100 transition-colors duration-200 cursor-pointer"
             >
                 <img src="/images/member.jpg" alt="member Icon" className="w-8 h-8 absolute object-contain left-10.6" />
                 <span className="mr-2"></span>
@@ -36,7 +36,7 @@ export default function LoginForm() {
 
             <button
                 onClick={() => setSelected('Admin')}
-                className="w-full border border-[#0083b0] text-sky-700 px-4 py-2 mb-2 rounded hover:bg-sky-100 transition-colors duration-200 items-center"
+                className="w-full border border-[#0083b0] text-sky-700 px-4 py-2 mb-2 rounded hover:bg-sky-100 transition-colors duration-200 items-center cursor-pointer"
             >
                 <img src="/images/admin.jpg" alt="Admin Icon" className="w-8 h-8 absolute object-contain left-10.6" />
                 Admin
@@ -44,7 +44,7 @@ export default function LoginForm() {
 
             <button
                 onClick={() => setSelected('Techie')}
-                className="w-full border border-[#0083b0] text-sky-700 px-4 py-2 rounded hover:bg-sky-100 transition-colors duration-200 items-center"
+                className="w-full border border-[#0083b0] text-sky-700 px-4 py-2 rounded hover:bg-sky-100 transition-colors duration-200 items-center cursor-pointer"
             >
                 <img src="/images/techie.png" alt="Techie Icon" className="w-9 h-9 absolute object-contain left-10.6"></img>
                 Techie
@@ -62,14 +62,14 @@ export default function LoginForm() {
                     <input
                         type="text"
                         placeholder="Tên đăng nhập"
-                        className="w-full mb-2 p-2 border rounded"
+                        className="w-103 mb-4 p-2 border rounded"
                     />
                     <input
                         type="password"
                         placeholder="Mật khẩu"
-                        className="w-full mb-4 p-2 border rounded"
+                        className="w-103 mb-4 p-2 border rounded"
                     />
-                    <button className="w-full bg-sky-600 text-white py-2 rounded hover:bg-sky-700">
+                    <button className="w-30 mx-35 bg-sky-600 text-white py-2 rounded hover:bg-sky-700 cursor-pointer">
                         Đăng nhập
                     </button>
                 </div>
