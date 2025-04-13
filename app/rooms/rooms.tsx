@@ -4,9 +4,6 @@ import { Sidebar } from "lucide-react"
 export default function RoomsPage() {
     return (
         <div className="min-h-screen bg-gray-50 p-8">
-            <Sidebar>
-                zz
-            </Sidebar>
             <div className="max-w-6xl mx-auto">
                 <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
                     Danh sách phòng

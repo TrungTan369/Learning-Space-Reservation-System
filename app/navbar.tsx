@@ -22,7 +22,7 @@ export default function Navbar() {
 					>
 						Trang chủ
 					</a>
-					<a href="/"
+					<a href="/calendar"
 						className={`hover:underline ${pathname === '/calendar' ? 'font-semibold text-blue-600 underline' : ''
 							}`}>
 						Lịch của tôi
@@ -32,8 +32,8 @@ export default function Navbar() {
 							}`}>
 						Xem phòng
 					</a>
-					<a href="/"
-						className={`hover:underline ${pathname === '/notice' ? 'font-semibold text-blue-600 underline' : ''
+					<a href="/forum"
+						className={`hover:underline ${pathname === '/forum' ? 'font-semibold text-blue-600 underline' : ''
 							}`}>
 						Thông báo chung
 					</a>

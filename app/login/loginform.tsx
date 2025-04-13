@@ -3,13 +3,29 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+
+
 export default function LoginForm() {
     const router = useRouter();
     const [selected, setSelected] = useState<'user' | 'Admin' | 'Techie' | null>(null);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleLogin = async (type: 'user' | 'Admin' | 'Techie') => {
-        console.log(`Logging in as ${type}`);
-        router.push('/');
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password, role: type }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            router.push('/');
+        } else {
+            alert(data.message || 'Đăng nhập thất bại');
+        }
     };
 
     return (
@@ -63,13 +79,19 @@ export default function LoginForm() {
                         type="text"
                         placeholder="Tên đăng nhập"
                         className="w-103 mb-4 p-2 border rounded"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                     <input
                         type="password"
                         placeholder="Mật khẩu"
                         className="w-103 mb-4 p-2 border rounded"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
-                    <button className="w-30 mx-35 bg-sky-600 text-white py-2 rounded hover:bg-sky-700 cursor-pointer">
+                    <button className="w-30 mx-35 bg-sky-600 text-white py-2 rounded hover:bg-sky-700 cursor-pointer"
+                        onClick={() => handleLogin(selected)}
+                    >
                         Đăng nhập
                     </button>
                 </div>
