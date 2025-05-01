@@ -99,29 +99,6 @@ export default function Home() {
                             </label>
                         </div>
 
-                        {/* <div className="relative">
-							<select
-								id="category"
-								defaultValue=""
-								className="peer w-32 appearance-none bg-white/90 rounded-full border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
-							>
-								<option value="" disabled hidden></option>
-								<option>Cá nhân</option>
-								<option>Hội trường</option>
-								<option>Phòng máy</option>
-								<option>Lý thuyết</option>
-							</select>
-							<label
-								htmlFor="category"
-								className="	absolute left-4 top-2 text-xs text-gray-500 transition-all
-       										peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
-        									peer-placeholder-shown:text-gray-400
-        									peer-focus:top-2 peer-focus:text-xs peer-focus:text-rose-500"
-							>
-								Danh mục
-							</label>
-						</div> */}
-
                         <button
                             type="submit"
                             className="bg-rose-600 text-white px-6 py-2 rounded-full hover:bg-rose-800 cursor-pointer"

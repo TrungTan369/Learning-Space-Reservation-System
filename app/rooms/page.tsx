@@ -9,8 +9,10 @@ import type { FilterState } from "./filter";
 
 export default function Room() {
     const [filters, setFilters] = useState<FilterState>({
+        _id: "",
+        name: "",
         coSo: [],
-        doRong: [],
+        sucChua: [],
         chatLuong: []
     });
 

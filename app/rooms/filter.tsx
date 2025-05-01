@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 import { SlidersHorizontal } from "lucide-react";
 
 export type FilterState = {
+    _id: string;
+    name: string;
     coSo: string[];
-    doRong: string[];
+    sucChua: string[];
     chatLuong: string[];
 };
 
@@ -15,8 +17,10 @@ type FilterProps = {
 
 const Filter = ({ onFilterChange }: FilterProps) => {
     const [filters, setFilters] = useState<FilterState>({
+        _id: "",
+        name: "",
         coSo: [],
-        doRong: [],
+        sucChua: [],
         chatLuong: [],
     });
 
@@ -26,8 +30,9 @@ const Filter = ({ onFilterChange }: FilterProps) => {
 
     const toggleCheckbox = (key: keyof FilterState, value: string) => {
         setFilters((prev) => {
+            const currentValues = prev[key] as string[];
             const updated = prev[key].includes(value)
-                ? prev[key].filter((v) => v !== value)
+                ? currentValues.filter((v) => v !== value)
                 : [...prev[key], value];
             return { ...prev, [key]: updated };
         });
@@ -63,7 +68,7 @@ const Filter = ({ onFilterChange }: FilterProps) => {
                 <SlidersHorizontal size={20} /> Bộ lọc
             </h2>
             {CheckboxGroup("Cơ sở", "coSo", ["1", "2"])}
-            {CheckboxGroup("Độ rộng", "doRong", ["10", "20", "40"])}
+            {CheckboxGroup("Sức chứa", "sucChua", ["10", "20", "40"])}
             {CheckboxGroup("Chất lượng", "chatLuong", ["1", "2", "3"])}
         </div>
     );
