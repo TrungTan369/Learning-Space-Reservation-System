@@ -4,9 +4,10 @@ import Image from 'next/image'
 import Footer from "./footer";
 import Navbar from "./navbar";
 import React, { useRef } from 'react';
-
+import { FormEvent } from "react";
 import { motion } from 'framer-motion';
 import { useInView } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -19,6 +20,22 @@ export default function Home() {
     const ref3 = useRef(null);
     const isInView3 = useInView(ref3, { once: true, amount: 0.5 });
 
+    const router = useRouter();
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const form = e.currentTarget;
+        const coSo = (form.elements.namedItem("coSo") as HTMLSelectElement).value;
+        const sucChua = (form.elements.namedItem("sucChua") as HTMLSelectElement).value;
+        const chatLuong = (form.elements.namedItem("chatLuong") as HTMLSelectElement).value;
+
+        const params = new URLSearchParams();
+        if (coSo) params.append("coSo", coSo);
+        if (sucChua) params.append("sucChua", sucChua);
+        if (chatLuong) params.append("chatLuong", chatLuong);
+
+        router.push(`/rooms?${params.toString()}`);
+    };
     return (
         <>
             <Navbar />
@@ -35,76 +52,81 @@ export default function Home() {
                     <p className="mt-2 text-lg">Tìm kiếm nhanh chóng, chính xác!</p>
 
                     <div className="mt-6 w-full max-w-5xl  text-black rounded-full p-3 flex flex-wrap gap-3 items-center justify-center">
-                        <div className="relative ">
-                            <select
-                                id="roomType"
-                                defaultValue=""
-                                className="peer w-40 appearance-none rounded-full bg-white/90 border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
-                            >
-                                <option value="" disabled hidden></option>
-                                <option>Cơ sở 1</option>
-                                <option>Cơ Sở 2</option>
-                            </select>
-                            <label
-                                htmlFor="roomType"
-                                className="absolute left-4 top-2 text-xs text-gray-500 transition-all
+                        <form onSubmit={handleSubmit} className="flex gap-4 items-center">
+                            <div className="relative ">
+                                <select
+                                    id="roomType"
+                                    name="coSo"
+                                    defaultValue=""
+                                    className="peer w-40 appearance-none rounded-full bg-white/90 border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
+                                >
+                                    <option value="" disabled hidden></option>
+                                    <option value="1">Cơ sở 1</option>
+                                    <option value="2">Cơ Sở 2</option>
+                                </select>
+                                <label
+                                    htmlFor="roomType"
+                                    className="absolute left-4 top-2 text-xs text-gray-500 transition-all
 											peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
 											peer-placeholder-shown:text-gray-400
 											peer-focus:top-2 peer-focus:text-xs peer-focus:text-rose-500"
-                            >
-                                Chọn cơ sở
-                            </label>
-                        </div>
-                        <div className="relative">
-                            <select
-                                id="capacity"
-                                defaultValue=""
-                                className="peer w-32 appearance-none bg-white/90 rounded-full border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
-                            >
-                                <option value="" disabled hidden></option>
-                                <option>10 người</option>
-                                <option>20 người</option>
-                                <option>40 người</option>
-                            </select>
-                            <label
-                                htmlFor="capacity"
-                                className="absolute left-4 top-2 text-xs text-gray-500 transition-all
+                                >
+                                    Chọn cơ sở
+                                </label>
+                            </div>
+                            <div className="relative">
+                                <select
+                                    id="capacity"
+                                    defaultValue=""
+                                    name="sucChua"
+                                    className="peer w-32 appearance-none bg-white/90 rounded-full border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
+                                >
+                                    <option value="" disabled hidden></option>
+                                    <option value="10">10 người</option>
+                                    <option value="20">20 người</option>
+                                    <option value="40">40 người</option>
+                                </select>
+                                <label
+                                    htmlFor="capacity"
+                                    className="absolute left-4 top-2 text-xs text-gray-500 transition-all
 								peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
 								peer-placeholder-shown:text-gray-400
 								peer-focus:top-2 peer-focus:text-xs peer-focus:text-rose-500"
-                            >
-                                Số lượng
-                            </label>
-                        </div>
+                                >
+                                    Sức chứa
+                                </label>
+                            </div>
 
-                        <div className="relative">
-                            <select
-                                id="quality"
-                                defaultValue=""
-                                className="peer w-40 appearance-none bg-white/90 rounded-full border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
-                            >
-                                <option value="" disabled hidden></option>
-                                <option>Loại 1</option>
-                                <option>Loại 2</option>
-                                <option>Loại 3</option>
-                            </select>
-                            <label
-                                htmlFor="quality"
-                                className="absolute left-4 top-2 text-xs text-gray-500 transition-all
+                            <div className="relative">
+                                <select
+                                    id="quality"
+                                    name="chatLuong"
+                                    defaultValue=""
+                                    className="peer w-40 appearance-none bg-white/90 rounded-full border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
+                                >
+                                    <option value="" disabled hidden></option>
+                                    <option value="1" >Loại 1</option>
+                                    <option value="2" >Loại 2</option>
+                                    <option value="3">Loại 3</option>
+                                </select>
+                                <label
+                                    htmlFor="quality"
+                                    className="absolute left-4 top-2 text-xs text-gray-500 transition-all
 											peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
 											peer-placeholder-shown:text-gray-400
 											peer-focus:top-2 peer-focus:text-xs peer-focus:text-rose-500"
-                            >
-                                Chất lượng
-                            </label>
-                        </div>
+                                >
+                                    Chất lượng
+                                </label>
+                            </div>
 
-                        <button
-                            type="submit"
-                            className="bg-rose-600 text-white px-6 py-2 rounded-full hover:bg-rose-800 cursor-pointer"
-                        >
-                            Tìm kiếm
-                        </button>
+                            <button
+                                type="submit"
+                                className="bg-rose-600 text-white px-6 py-2 rounded-full hover:bg-rose-800 cursor-pointer"
+                            >
+                                Tìm kiếm
+                            </button>
+                        </form>
                     </div>
 
                 </div>
