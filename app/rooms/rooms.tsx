@@ -1,7 +1,12 @@
-import { Sidebar } from "lucide-react"
+import { FilterState } from "./filter";
+
+type RoomsPageProps = {
+    filters: FilterState;
+};
 
 
-export default function RoomsPage() {
+export default function RoomsPage({ filters }: RoomsPageProps) {
+    console.log("Filters received:", filters);
     return (
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-6xl mx-auto">

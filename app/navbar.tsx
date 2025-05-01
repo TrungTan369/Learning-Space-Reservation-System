@@ -17,23 +17,23 @@ export default function Navbar() {
 					<Image src="/images/logo.png" alt="BK Logo" width={32} height={32} />
 					<a
 						href="/"
-						className={`hover:underline ${pathname === '/' ? 'font-semibold text-blue-600 underline' : ''
+						className={`hover:underline  ${pathname === '/' ? 'font-semibold text-blue-600' : ''
 							}`}
 					>
 						Trang chủ
 					</a>
 					<a href="/calendar"
-						className={`hover:underline ${pathname === '/calendar' ? 'font-semibold text-blue-600 underline' : ''
+						className={`hover:underline ${pathname === '/calendar' ? 'font-semibold text-blue-600' : ''
 							}`}>
 						Lịch của tôi
 					</a>
 					<a href="/rooms"
-						className={`hover:underline ${pathname === '/rooms' ? 'font-semibold text-blue-600 underline' : ''
+						className={`hover:underline ${pathname === '/rooms' ? 'font-semibold text-blue-600' : ''
 							}`}>
 						Xem phòng
 					</a>
 					<a href="/forum"
-						className={`hover:underline ${pathname === '/forum' ? 'font-semibold text-blue-600 underline' : ''
+						className={`hover:underline ${pathname === '/forum' ? 'font-semibold text-blue-600' : ''
 							}`}>
 						Thông báo chung
 					</a>

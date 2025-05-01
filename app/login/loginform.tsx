@@ -7,11 +7,11 @@ import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
     const router = useRouter();
-    const [selected, setSelected] = useState<'user' | 'Admin' | 'Techie' | null>(null);
+    const [selected, setSelected] = useState<'User' | 'Admin' | 'Techie' | null>(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = async (type: 'user' | 'Admin' | 'Techie') => {
+    const handleLogin = async (type: 'User' | 'Admin' | 'Techie') => {
         const res = await fetch('/api/login', {
             method: 'POST',
             headers: {
@@ -42,7 +42,7 @@ export default function LoginForm() {
             </h2>
 
             <button
-                onClick={() => setSelected('user')}
+                onClick={() => setSelected('User')}
                 className="w-full border border-[#0083b0] text-sky-700 px-4 py-2 mb-2 rounded hover:bg-sky-100 transition-colors duration-200 cursor-pointer"
             >
                 <img src="/images/member.jpg" alt="member Icon" className="w-8 h-8 absolute object-contain left-10.6" />
@@ -73,7 +73,7 @@ export default function LoginForm() {
             {selected && (
                 <div className="w-full max-w-sm text-left">
                     <h3 className="text-lg font-semibold text-blue-800 mb-4">
-                        Đăng nhập với tài khoản {selected === 'user' ? 'HCMUT' : selected}
+                        Đăng nhập với tài khoản {selected === 'User' ? 'HCMUT' : selected}
                     </h3>
                     <input
                         type="text"

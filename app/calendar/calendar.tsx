@@ -1,19 +1,26 @@
 'use client';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import lunar from 'lunar-calendar';
 
 const Calendar = () => {
-
     const today = new Date();
     const [month, setMonth] = useState(today.getMonth()); // 0-11
     const [year, setYear] = useState(today.getFullYear());
     const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const lunarDate = lunar.solarToLunar(year, month + 1, today.getDate());
     let choosevideo = "";
-    if (lunarDate.lunarMonth === 1) {
+    let isLunarNewYearMonth = false;
+    for (let d = 1; d <= daysInMonth; d++) {
+        const ld = lunar.solarToLunar(year, month + 1, d);
+        if (ld.lunarDay === 1 && ld.lunarMonth === 1) {
+            isLunarNewYearMonth = true;
+            break;
+        }
+    }
+
+    if (isLunarNewYearMonth) {
         choosevideo = "/images/tet.mp4";
     } else if ([0, 1, 2].includes(month)) {
         choosevideo = "/images/spring.mp4";
@@ -21,7 +28,7 @@ const Calendar = () => {
         choosevideo = "/images/summer.mp4";
     } else if ([6, 7, 8].includes(month)) {
         choosevideo = "/images/autumn.mp4";
-    } else if ([9, 10, 11].includes(month)) {
+    } else {
         choosevideo = "/images/winter.mp4";
     }
 
@@ -35,6 +42,7 @@ const Calendar = () => {
         let content = <span>{d}</span>;
 
         const isTet = lunarDay.lunarMonth === 1 && [1, 2, 3].includes(lunarDay.lunarDay);
+
         if (isTet) {
             content = (
                 <div className="flex flex-col items-center w-full h-full bg-red-400 p-2 rounded-2xl">
@@ -71,8 +79,8 @@ const Calendar = () => {
 
     return (
         <div className="relative w-full min-h-screen overflow-hidden">
-
             <video
+                key={choosevideo}
                 autoPlay
                 muted
                 loop
