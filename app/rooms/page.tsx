@@ -10,18 +10,20 @@ import type { FilterState } from "./filter";
 export default function Room() {
     const [filters, setFilters] = useState<FilterState>({
         coSo: [],
-        loaiPhong: [],
+        doRong: [],
+        chatLuong: []
     });
 
     return (
         <>
             <Navbar />
-
-            <div className="flex flex-col md:flex-row gap-4 px-6 py-4">
-                <div className="md:w-1/4 w-full">
-                    <Filter onFilterChange={(filters) => setFilters(filters)} />
+            <div className="flex flex-col md:flex-row gap-6 px-4 py-6 max-w-7xl mx-auto">
+                <div className="md:w-1/5 w-full">
+                    <div className="sticky top-24">
+                        <Filter onFilterChange={(filters) => setFilters(filters)} />
+                    </div>
                 </div>
-                <div className="md:w-3/4 w-full">
+                <div className="md:w-4/5 w-full">
                     <RoomsPage filters={filters} />
                 </div>
             </div>

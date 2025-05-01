@@ -55,27 +55,6 @@ export default function Home() {
                                 Chọn cơ sở
                             </label>
                         </div>
-                        <div className="relative ">
-                            <select
-                                id="roomType"
-                                defaultValue=""
-                                className="peer w-40 appearance-none rounded-full bg-white/90 border px-4 pt-5 pb-2 text-sm text-black outline-none focus:border-rose-500"
-                            >
-                                <option value="" disabled hidden></option>
-                                <option>Phòng học</option>
-                                <option>Phòng meeting</option>
-                            </select>
-                            <label
-                                htmlFor="roomType"
-                                className="absolute left-4 top-2 text-xs text-gray-500 transition-all
-											peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
-											peer-placeholder-shown:text-gray-400
-											peer-focus:top-2 peer-focus:text-xs peer-focus:text-rose-500"
-                            >
-                                Loại phòng
-                            </label>
-                        </div>
-
                         <div className="relative">
                             <select
                                 id="capacity"

@@ -4,7 +4,6 @@ type RoomsPageProps = {
     filters: FilterState;
 };
 
-
 export default function RoomsPage({ filters }: RoomsPageProps) {
     console.log("Filters received:", filters);
     return (

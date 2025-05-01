@@ -1,9 +1,12 @@
-// components/xem-phong/Filter.tsx
+'use client';
+
 import React, { useState, useEffect } from "react";
+import { SlidersHorizontal } from "lucide-react";
 
 export type FilterState = {
     coSo: string[];
-    loaiPhong: string[];
+    doRong: string[];
+    chatLuong: string[];
 };
 
 type FilterProps = {
@@ -13,55 +16,55 @@ type FilterProps = {
 const Filter = ({ onFilterChange }: FilterProps) => {
     const [filters, setFilters] = useState<FilterState>({
         coSo: [],
-        loaiPhong: [],
+        doRong: [],
+        chatLuong: [],
     });
 
+    useEffect(() => {
+        onFilterChange(filters);
+    }, [filters, onFilterChange]);
+
     const toggleCheckbox = (key: keyof FilterState, value: string) => {
-        setFilters(prev => {
+        setFilters((prev) => {
             const updated = prev[key].includes(value)
-                ? prev[key].filter(v => v !== value)
+                ? prev[key].filter((v) => v !== value)
                 : [...prev[key], value];
             return { ...prev, [key]: updated };
         });
     };
 
-    useEffect(() => {
-        onFilterChange(filters);
-    }, [filters]);
+    const CheckboxGroup = (
+        title: string,
+        key: keyof FilterState,
+        options: string[]
+    ) => (
+        <div>
+            <h3 className="text-lg font-semibold mb-2">{title}</h3>
+            <div className="space-y-1">
+                {options.map((opt) => (
+                    <label key={opt} className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={filters[key].includes(opt)}
+                            onChange={() => toggleCheckbox(key, opt)}
+                            className="accent-rose-600"
+                        />
+                        <span>{opt}</span>
+                    </label>
+                ))}
+            </div>
+        </div>
+    );
 
     return (
-        <div className="w-64 p-4 bg-white shadow rounded-lg space-y-4 sticky top-20 h-fit">
-            <h2 className="text-lg font-semibold">Bộ lọc</h2>
 
-            {/* Cơ sở */}
-            <div>
-                <p className="font-medium mb-2">Chọn cơ sở</p>
-                {["1", "2"].map(cs => (
-                    <label key={cs} className="flex items-center space-x-2 mb-1">
-                        <input
-                            type="checkbox"
-                            checked={filters.coSo.includes(cs)}
-                            onChange={() => toggleCheckbox("coSo", cs)}
-                        />
-                        <span>Cơ sở {cs}</span>
-                    </label>
-                ))}
-            </div>
-
-            {/* Loại phòng */}
-            <div>
-                <p className="font-medium mb-2">Loại phòng</p>
-                {["hoc", "hop"].map(lp => (
-                    <label key={lp} className="flex items-center space-x-2 mb-1">
-                        <input
-                            type="checkbox"
-                            checked={filters.loaiPhong.includes(lp)}
-                            onChange={() => toggleCheckbox("loaiPhong", lp)}
-                        />
-                        <span>{lp === "hoc" ? "Phòng học" : "Phòng họp"}</span>
-                    </label>
-                ))}
-            </div>
+        <div className="bg-white shadow rounded-2xl p-4 space-y-6">
+            <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800">
+                <SlidersHorizontal size={20} /> Bộ lọc
+            </h2>
+            {CheckboxGroup("Cơ sở", "coSo", ["1", "2"])}
+            {CheckboxGroup("Độ rộng", "doRong", ["10", "20", "40"])}
+            {CheckboxGroup("Chất lượng", "chatLuong", ["1", "2", "3"])}
         </div>
     );
 };
