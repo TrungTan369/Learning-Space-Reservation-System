@@ -26,13 +26,19 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
+            _id: user._id,
+            username: user.username,
             role: user.role,
-            username: user.username
+            email: user.email,
+            fullname: user.fullname,
+            birth: user.birth,
+            phone: user.phone
         });
     } catch (error) {
-        console.error("Server error:", error); // 👈 thêm dòng này để xem lỗi
+        console.error("Server error:", error);
         return NextResponse.json({ success: false, message: 'Lỗi server' }, { status: 500 });
     } finally {
         await client.close();
     }
+
 }

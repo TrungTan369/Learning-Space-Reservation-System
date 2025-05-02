@@ -17,11 +17,18 @@ export default function LoginForm() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password, role: type }),
+            body: JSON.stringify({ username, password }),
         });
 
         const data = await res.json();
         if (res.ok) {
+            localStorage.setItem('userId', data._id);
+            localStorage.setItem('username', data.username);
+            localStorage.setItem('userRole', data.role);
+            localStorage.setItem('fullname', data.fullname);
+            localStorage.setItem('email', data.email);
+            localStorage.setItem('birth', data.birth);
+            localStorage.setItem('phone', data.phone);
             router.push('/');
         } else {
             alert(data.message || 'Đăng nhập thất bại');
