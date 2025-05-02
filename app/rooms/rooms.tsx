@@ -119,7 +119,7 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
                     {role === 'admin' && (
                         <button
                             onClick={() => setShowAdd(true)}
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-all"
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-all cursor-pointer"
                         >
                             ➕ Thêm phòng
                         </button>
@@ -183,9 +183,9 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
                     <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg relative">
                         <button
                             onClick={() => setShowAdd(false)}
-                            className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold"
+                            className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl font-bold cursor-pointer"
                         >
-                            ×
+                            X
                         </button>
                         <h2 className="text-xl font-semibold mb-4">➕ Thêm phòng mới</h2>
                         <input
@@ -219,7 +219,7 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
                         </select>
                         <button
                             onClick={handleAddRoom}
-                            className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
+                            className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 cursor-pointer"
                         >
                             Thêm phòng
                         </button>
