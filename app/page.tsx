@@ -14,6 +14,7 @@ const scrollToTop = () => {
 }
 
 export default function Home() {
+
     const ref2 = useRef(null);
     const isInView2 = useInView(ref2, { once: true, amount: 0.5 });
 
@@ -223,11 +224,12 @@ export default function Home() {
             </div>
             <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="fixed bottom-6 right-6 w-20 h-20 bg-red-300 text-white rounded-full shadow-md flex items-center justify-center hover:bg-red-400 transition-all z-50 animate-bounce"
+                className="fixed bottom-6 right-6 w-20 h-20 bg-red-300 text-white rounded-full shadow-md flex items-center justify-center hover:bg-red-400 transition-all z-50 animate-bounce cursor-pointer"
                 title="Đặt phòng ngay"
             >
                 Đặt phòng
             </button>
+
             <Footer />
         </>
 

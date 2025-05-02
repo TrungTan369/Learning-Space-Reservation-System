@@ -76,3 +76,39 @@ export async function POST(req: NextRequest) {
         await client.close();
     }
 }
+
+export async function DELETE(req: NextRequest) {
+    interface JwtPayload {
+        _id: string;
+        role: string;
+        fullname: string;
+    }
+    const tokenHeader = req.headers.get('authorization');
+    if (!tokenHeader || !tokenHeader.startsWith('Bearer ')) {
+        return NextResponse.json({ message: 'Thiếu token' }, { status: 401 });
+    }
+    const token = tokenHeader.split(' ')[1];
+    let user;
+    try {
+        user = jwt.verify(token, secret) as JwtPayload;
+    } catch (err) {
+        return NextResponse.json({ message: 'Token không hợp lệ' }, { status: 403 });
+    }
+    if (user.role !== 'admin') {
+        return NextResponse.json({ message: 'Không có quyền xoá bài viết' }, { status: 403 });
+    }
+    const postId = req.nextUrl.searchParams.get('id');
+    if (!postId) {
+        return NextResponse.json({ message: 'Thiếu ID bài viết' }, { status: 400 });
+    }
+    try {
+        await client.connect();
+        const db = client.db('forum');
+        await db.collection('forum').deleteOne({ _id: new ObjectId(postId) });
+
+        return NextResponse.json({ message: 'Đã xoá bài viết thành công' });
+    } catch (err) {
+        console.error('Lỗi xoá bài:', err);
+        return NextResponse.json({ message: 'Lỗi máy chủ' }, { status: 500 });
+    }
+}
