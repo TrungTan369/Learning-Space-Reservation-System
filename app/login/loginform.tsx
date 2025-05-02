@@ -22,6 +22,7 @@ export default function LoginForm() {
 
         const data = await res.json();
         if (res.ok) {
+            localStorage.setItem('token', data.token);
             localStorage.setItem('userId', data._id);
             localStorage.setItem('username', data.username);
             localStorage.setItem('userRole', data.role);
