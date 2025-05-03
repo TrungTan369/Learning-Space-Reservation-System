@@ -1,5 +1,5 @@
 "use client";
-
+import { jwtDecode } from 'jwt-decode';
 import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 
@@ -9,6 +9,7 @@ type BookingModalProps = {
     onBook: (bookingData: any) => void;
     roomId: string;
 };
+
 const timeSlots = [
     "07-09",
     "09-11",
@@ -23,16 +24,44 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
-    const handleBooking = () => {
+    const handleBooking = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Bạn chưa đăng nhập');
+            return;
+        }
+
         if (selectedDate && selectedSlot) {
             const [startStr, endStr] = selectedSlot.split("-");
             const startTime = parseInt(startStr);
             const endTime = parseInt(endStr);
-            onBook({ roomId, date: selectedDate, startTime, endTime });
-            onClose();
+
+            const res = await fetch('/api/booking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    roomId,
+                    date: selectedDate,
+                    startTime,
+                    endTime,
+                }),
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert(data.message || 'Đặt phòng thành công');
+                onBook({ roomId, date: selectedDate, startTime, endTime }); // callback
+                onClose();
+            } else {
+                alert(data.message || 'Đặt phòng thất bại');
+            }
+        } else {
+            alert("Vui lòng chọn ngày và khung giờ");
         }
     };
-
 
     useEffect(() => {
         if (!selectedDate || !roomId) return;
@@ -97,7 +126,11 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                         // => chỉ cần kiểm tra nếu bookedSlots có chứa (start + 1)
                         const criticalHour = (start + 1).toString();
                         const isBooked = bookedSlots.includes(criticalHour);
-
+                        //
+                        const isActuallyBooked = Array.from({ length: end - start }, (_, i) =>
+                            (start + i).toString()
+                        ).some((hour) => bookedSlots.includes(hour));
+                        //
                         return (
                             <button
                                 key={slot}
@@ -108,7 +141,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                                 }}
                                 disabled={isBooked}
                                 className={`flex-1 px-4 py-2 rounded-full text-sm border
-          ${selectedSlot === slot
+                                            ${selectedSlot === slot
                                         ? "bg-green-600 text-white"
                                         : isBooked
                                             ? "bg-red-500 text-white cursor-not-allowed"

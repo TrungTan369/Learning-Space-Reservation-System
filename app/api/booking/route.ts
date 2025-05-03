@@ -10,40 +10,37 @@ if (!secret) throw new Error('JWT_SECRET is not defined');
 const client = new MongoClient(uri);
 
 export async function POST(req: NextRequest) {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.split(" ")[1];
+    if (!token) {
+        return NextResponse.json({ message: "Không có token" }, { status: 401 });
+    }
     try {
-        const token = req.cookies.get('token')?.value;
-        if (!token) {
-            return NextResponse.json({ message: "Không có token" }, { status: 401 });
-        }
-
-        const decoded = jwt.verify(token, secret) as { userId: string };
-        const userId = decoded.userId;
+        const decoded: any = jwt.verify(token, secret);
 
         const body = await req.json();
         const { roomId, date, startTime, endTime } = body;
 
-        if (!roomId || !date || !startTime || !endTime) {
+        if (!roomId || !date || startTime == null || endTime == null) {
             return NextResponse.json({ message: "Thiếu thông tin đặt phòng" }, { status: 400 });
         }
 
         await client.connect();
         const db = client.db("room");
-        const bookingCollection = db.collection("booking");
-
-        // Lưu lịch đặt
-        const result = await bookingCollection.insertOne({
+        const newBooking = {
             roomId: new ObjectId(roomId),
-            userId: new ObjectId(userId),
+            userId: new ObjectId(decoded._id),
             date,
             startTime,
             endTime,
-        });
-
-        return NextResponse.json({ message: "Đặt phòng thành công", bookingId: result.insertedId }, { status: 201 });
-
+        };
+        await db.collection('booking').insertOne(newBooking);
+        return NextResponse.json({ message: "Đặt phòng thành công" });
     } catch (error: any) {
         console.error("Lỗi đặt phòng:", error.message);
         return NextResponse.json({ message: "Lỗi máy chủ" }, { status: 500 });
+    } finally {
+        await client.close();
     }
 }
 
