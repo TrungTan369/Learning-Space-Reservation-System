@@ -83,11 +83,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
         <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
             <Dialog.Panel className="z-50 w-full max-w-2xl bg-white rounded-2xl p-6 shadow-xl">
-                <Dialog.Title className="text-xl font-semibold text-gray-800 mb-4">
+                <Dialog.Title className="text-xl font-semibold text-blue-800 mb-4">
                     Đặt phòng
                 </Dialog.Title>
 
                 {/* Ngày */}
+                <h2 className="text-1xl font-medium text-purple-700 mb-2">Chọn ngày</h2>
                 <div className="flex justify-between gap-2 mb-4">
                     {Array.from({ length: 7 }).map((_, i) => {
                         const date = new Date();
@@ -107,7 +108,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                             <button
                                 key={i}
                                 onClick={() => setSelectedDate(formatted)}
-                                className={`w-full px-3 py-2 rounded-lg text-sm text-center
+                                className={`w-full px-3 py-2 rounded-lg text-sm text-center cursor-pointer
                         ${selectedDate === formatted ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700"}`}
                             >
                                 {formattedForDisplay}
@@ -116,6 +117,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                     })}
                 </div>
 
+                <h3 className="text-md font-medium text-purple-700 mb-2">Chọn giờ</h3>
                 <div className="flex flex-wrap justify-between gap-2 mb-6">
                     {timeSlots.map((slot) => {
                         const [startStr, endStr] = slot.split("-");
@@ -126,11 +128,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                         // => chỉ cần kiểm tra nếu bookedSlots có chứa (start + 1)
                         const criticalHour = (start + 1).toString();
                         const isBooked = bookedSlots.includes(criticalHour);
-                        //
-                        const isActuallyBooked = Array.from({ length: end - start }, (_, i) =>
-                            (start + i).toString()
-                        ).some((hour) => bookedSlots.includes(hour));
-                        //
+                        const disabledByDate = !selectedDate;
                         return (
                             <button
                                 key={slot}
@@ -140,12 +138,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                                     }
                                 }}
                                 disabled={isBooked}
-                                className={`flex-1 px-4 py-2 rounded-full text-sm border
-                                            ${selectedSlot === slot
+                                className={`flex-1 px-4 py-2 rounded-full text-sm border transition
+                                    ${selectedSlot === slot
                                         ? "bg-green-600 text-white"
                                         : isBooked
-                                            ? "bg-red-500 text-white cursor-not-allowed"
-                                            : "bg-gray-100 text-gray-700"
+                                            ? "bg-red-500 text-white opacity-90 cursor-not-allowed"
+                                            : disabledByDate
+                                                ? "bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed"
+                                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                     }`}
                             >
                                 {slot}
