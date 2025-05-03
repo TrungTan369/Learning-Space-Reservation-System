@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { FilterState } from "./filter";
 import { jwtDecode } from "jwt-decode";
-
+import BookingModal from "./booking";
 type Room = {
     _id: string;
     name: string;
@@ -25,6 +25,8 @@ const chatLuongMap: Record<string, string> = {
 
 export default function RoomsPage({ filters }: RoomsPageProps) {
     const [rooms, setRooms] = useState<Room[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false); // pop-up đặt phòng
+    const [selectedRoom, setSelectedRoom] = useState<{ name: string; id: string } | null>(null);
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const limit = 9;
@@ -111,6 +113,16 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
             alert(data.message || 'Thêm phòng thất bại');
         }
     };
+
+    const handleOpenModal = (room: any) => {
+        setSelectedRoom({ name: room.name, id: room._id });
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedRoom(null);
+    };
     return (
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-6xl mx-auto">
@@ -143,7 +155,9 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
                                     {chatLuongMap[room.chatLuong] || "Không rõ loại"}
                                 </p>
                                 <div className="flex items-center justify-between gap-2">
-                                    <button className="bg-rose-600 text-white px-4 py-2 rounded-full text-sm cursor-pointer">
+                                    <button
+                                        onClick={() => handleOpenModal(room)}
+                                        className="bg-rose-600 text-white px-4 py-2 rounded-full text-sm cursor-pointer">
                                         Đặt phòng
                                     </button>
                                     {role === 'admin' && (
@@ -226,6 +240,17 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
                     </div>
                 </div>
             )}
+            {isModalOpen && selectedRoom && (
+                <BookingModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    roomId={selectedRoom.id}
+                    onBook={(bookingData) => {
+                        handleCloseModal();
+                    }}
+                />
+            )}
+
         </div>
     );
 }

@@ -1,0 +1,142 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { Dialog } from "@headlessui/react";
+
+type BookingModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    onBook: (bookingData: any) => void;
+    roomId: string;
+};
+const timeSlots = [
+    "07-09",
+    "09-11",
+    "11-13",
+    "13-15",
+    "15-17",
+    "17-19",
+];
+
+const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, roomId }) => {
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+    const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+
+    const handleBooking = () => {
+        if (selectedDate && selectedSlot) {
+            const [startStr, endStr] = selectedSlot.split("-");
+            const startTime = parseInt(startStr);
+            const endTime = parseInt(endStr);
+            onBook({ roomId, date: selectedDate, startTime, endTime });
+            onClose();
+        }
+    };
+
+
+    useEffect(() => {
+        if (!selectedDate || !roomId) return;
+
+        const fetchBookedSlots = async () => {
+            try {
+                const res = await fetch(`/api/booking?roomId=${roomId}&date=${selectedDate}`);
+                const data = await res.json();
+                setBookedSlots(data.bookedSlots || []);
+            } catch (error) {
+                console.error("Lỗi khi lấy slot đã đặt:", error);
+            }
+        };
+
+        fetchBookedSlots();
+    }, [selectedDate, roomId]);
+
+    return (
+        <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+            <Dialog.Panel className="z-50 w-full max-w-2xl bg-white rounded-2xl p-6 shadow-xl">
+                <Dialog.Title className="text-xl font-semibold text-gray-800 mb-4">
+                    Đặt phòng
+                </Dialog.Title>
+
+                {/* Ngày */}
+                <div className="flex justify-between gap-2 mb-4">
+                    {Array.from({ length: 7 }).map((_, i) => {
+                        const date = new Date();
+                        date.setDate(date.getDate() + i + 1);
+
+                        const formattedForDisplay = date.toLocaleDateString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                        });
+                        const formatted = date.toLocaleDateString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                        });
+
+                        return (
+                            <button
+                                key={i}
+                                onClick={() => setSelectedDate(formatted)}
+                                className={`w-full px-3 py-2 rounded-lg text-sm text-center
+                        ${selectedDate === formatted ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700"}`}
+                            >
+                                {formattedForDisplay}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className="flex flex-wrap justify-between gap-2 mb-6">
+                    {timeSlots.map((slot) => {
+                        const [startStr, endStr] = slot.split("-");
+                        const start = parseInt(startStr);
+                        const end = parseInt(endStr);
+
+                        // Ý tưởng: slot 07-09 sẽ bị đỏ nếu có số 8 nằm trong bookedSlots
+                        // => chỉ cần kiểm tra nếu bookedSlots có chứa (start + 1)
+                        const criticalHour = (start + 1).toString();
+                        const isBooked = bookedSlots.includes(criticalHour);
+
+                        return (
+                            <button
+                                key={slot}
+                                onClick={() => {
+                                    if (!isBooked) {
+                                        setSelectedSlot(slot);
+                                    }
+                                }}
+                                disabled={isBooked}
+                                className={`flex-1 px-4 py-2 rounded-full text-sm border
+          ${selectedSlot === slot
+                                        ? "bg-green-600 text-white"
+                                        : isBooked
+                                            ? "bg-red-500 text-white cursor-not-allowed"
+                                            : "bg-gray-100 text-gray-700"
+                                    }`}
+                            >
+                                {slot}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Buttons */}
+                <div className="flex justify-end gap-4">
+                    <button onClick={onClose} className="px-4 py-2 rounded-full text-sm bg-gray-300 hover:bg-gray-400 text-gray-800">
+                        Huỷ
+                    </button>
+                    <button
+                        onClick={handleBooking}
+                        disabled={!selectedDate || !selectedSlot}
+                        className="px-4 py-2 rounded-full text-sm bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 cursor-pointer"
+                    >
+                        Đặt phòng
+                    </button>
+                </div>
+            </Dialog.Panel>
+        </Dialog>
+    );
+};
+
+export default BookingModal;

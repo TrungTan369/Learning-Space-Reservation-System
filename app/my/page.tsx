@@ -31,7 +31,7 @@ export default function MyPage() {
             <div className="flex min-h-[600px] bg-gray-50 mx-6 my-6 gap-6">
 
                 {/* Sidebar */}
-                <div className="w-64 bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col justify-between h-120">
+                <div className="w-64 bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col justify-between h-140">
                     <nav className="space-y-4 text-gray-700 text-base">
 
                         <div
