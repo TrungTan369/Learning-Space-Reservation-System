@@ -107,7 +107,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                         return (
                             <button
                                 key={i}
-                                onClick={() => setSelectedDate(formatted)}
+                                onClick={() => {
+                                    setSelectedDate(formatted);
+                                    setSelectedSlot(null);
+                                }}
                                 className={`w-full px-3 py-2 rounded-lg text-sm text-center cursor-pointer
                         ${selectedDate === formatted ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700"}`}
                             >
