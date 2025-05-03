@@ -23,6 +23,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+    const [isSlotsLoading, setIsSlotsLoading] = useState(false);
 
     const handleBooking = async () => {
         const token = localStorage.getItem('token');
@@ -63,20 +64,21 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
         }
     };
 
+    const fetchBookedSlots = async (date: string) => {
+        setIsSlotsLoading(true);
+        try {
+            const res = await fetch(`/api/booking?roomId=${roomId}&date=${selectedDate}`);
+            const data = await res.json();
+            setBookedSlots(data.bookedSlots || []);
+        } catch (error) {
+            console.error("Lỗi khi lấy slot đã đặt:", error);
+        } finally {
+            setIsSlotsLoading(false);
+        }
+    };
     useEffect(() => {
         if (!selectedDate || !roomId) return;
-
-        const fetchBookedSlots = async () => {
-            try {
-                const res = await fetch(`/api/booking?roomId=${roomId}&date=${selectedDate}`);
-                const data = await res.json();
-                setBookedSlots(data.bookedSlots || []);
-            } catch (error) {
-                console.error("Lỗi khi lấy slot đã đặt:", error);
-            }
-        };
-
-        fetchBookedSlots();
+        fetchBookedSlots(selectedDate);
     }, [selectedDate, roomId]);
 
     return (
@@ -107,9 +109,13 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                         return (
                             <button
                                 key={i}
-                                onClick={() => {
+                                onClick={async () => {
                                     setSelectedDate(formatted);
                                     setSelectedSlot(null);
+                                    setIsSlotsLoading(true);
+                                    //
+                                    await fetchBookedSlots(formatted);
+                                    setIsSlotsLoading(false);
                                 }}
                                 className={`w-full px-3 py-2 rounded-lg text-sm text-center cursor-pointer
                         ${selectedDate === formatted ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700"}`}
@@ -146,7 +152,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onBook, ro
                                         ? "bg-green-600 text-white"
                                         : isBooked
                                             ? "bg-red-500 text-white opacity-90 cursor-not-allowed"
-                                            : disabledByDate
+                                            : disabledByDate || isSlotsLoading
                                                 ? "bg-gray-300 text-gray-500 opacity-50 cursor-not-allowed"
                                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                     }`}
