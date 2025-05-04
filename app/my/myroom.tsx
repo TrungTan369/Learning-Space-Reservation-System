@@ -92,11 +92,9 @@ export default function MyRoom() {
         fetchMyRooms();
     }, []);
 
-    // Format time from minutes to readable format (e.g., 7:00)
-    const formatTime = (minutes: number) => {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+    // Format time from hours to readable format (e.g., 07:00)
+    const formatTime = (hours: number) => {
+        return `${hours.toString().padStart(2, '0')}:00`;
     };
     
     // Format date from "DD/MM/YYYY" to more readable format
