@@ -19,7 +19,12 @@ export async function POST(req: NextRequest) {
         const decoded: any = jwt.verify(token, secret);
 
         const body = await req.json();
+
         const { roomId, date, startTime, endTime } = body;
+
+        const roomCollection = client.db('room').collection('room');
+        const room = await roomCollection.findOne({ _id: new ObjectId(roomId) });
+        const roomName = room?.name;
 
         if (!roomId || !date || startTime == null || endTime == null) {
             return NextResponse.json({ message: "Thiếu thông tin đặt phòng" }, { status: 400 });
@@ -33,6 +38,7 @@ export async function POST(req: NextRequest) {
             date,
             startTime,
             endTime,
+            roomName,
         };
         await db.collection('booking').insertOne(newBooking);
         return NextResponse.json({ message: "Đặt phòng thành công" });

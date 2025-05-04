@@ -91,35 +91,38 @@ export default function ForumPage() {
                 className="object-cover z-0"
             />
             <div className="relative z-10 p-4">
-                <h1 className="text-xl font-bold mb-4">📢 Bài viết diễn đàn</h1>
-                {posts.map((post: any) => (
-                    <div key={post._id} className="border p-3 mb-3 rounded bg-white shadow">
-                        <h2 className="font-semibold">{post.title}</h2>
-                        <p>{post.content}</p>
-                        <small className="text-gray-500"> Tác giả: {post.authorName}</small>
-                        <small className="text-gray-500">
-                            .  📅 Ngày đăng: {new Date(post.createAt).toLocaleString('vi-VN', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: '2-digit',
-                                hour12: false
-                            })}
-                        </small>
-                        {role === 'admin' && (
-                            <div className="mt-2">
-                                <button
-                                    onClick={() => handleDelete(post._id)}
-                                    className="text-red-600 hover:underline cursor-pointer"
-                                >
-                                    🗑️ Xoá
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                ))}
-
+                <div className="mx-6 mt-4 bg-white rounded-xl shadow-sm border border-gray-200 px-8 py-4 flex items-center justify-between">
+                    <h1 className="text-xl font-bold mb-4">📢 Bài viết diễn đàn</h1>
+                </div>
+                <div className=" bg-gray-50 mx-6 my-6 gap-6">
+                    {posts.map((post: any) => (
+                        <div key={post._id} className="border p-3 mb-3 rounded bg-white shadow">
+                            <h2 className="font-semibold">{post.title}</h2>
+                            <p>{post.content}</p>
+                            <small className="text-gray-500"> Tác giả: {post.authorName}</small>
+                            <small className="text-gray-500">
+                                .  📅 Ngày đăng: {new Date(post.createAt).toLocaleString('vi-VN', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: '2-digit',
+                                    hour12: false
+                                })}
+                            </small>
+                            {role === 'admin' && (
+                                <div className="mt-2">
+                                    <button
+                                        onClick={() => handleDelete(post._id)}
+                                        className="text-red-600 hover:underline cursor-pointer"
+                                    >
+                                        🗑️ Xoá
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
                 {role === 'admin' && (
                     <div className="flex justify-end mb-4">
                         <button
@@ -177,8 +180,11 @@ export default function ForumPage() {
                             </div>
                         </div>
                     </div>
+
                 )}
+
             </div>
+
         </div>
     );
 }

@@ -1,13 +1,43 @@
 'use client'
 import Image from "next/image";
 import { Bell, MessageCircle } from "lucide-react";
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from "next/navigation";
+import jwt from 'jsonwebtoken';
+
+const secret = process.env.JWT_SECRET!;
 
 export default function Navbar() {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
+
+    const [isAdmin, setIsAdmin] = useState(false);
+
+
+    useEffect(() => {
+        const checkRole = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/me', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data = await res.json();
+                if (data.role === 'admin') {
+                    setIsAdmin(true);
+                }
+            } catch (err) {
+                console.error('Lỗi khi xác thực role:', err);
+            }
+        };
+
+        checkRole();
+    }, []);
+
 
     return (
         <nav className="sticky top-0 left-0 w-full bg-transparent backdrop-blur-md shadow-sm z-50">
@@ -37,6 +67,11 @@ export default function Navbar() {
                             }`}>
                         Thông báo chung
                     </a>
+                    {isAdmin && (
+                        <a href="/manager" className={`hover:underline ${pathname === '/manager' ? 'font-semibold text-blue-600' : ''}`}>
+                            Quản lí
+                        </a>
+                    )}
                 </div>
 
                 <div className="flex items-center space-x-4">
