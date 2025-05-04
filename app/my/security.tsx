@@ -59,7 +59,7 @@ export default function Security() {
             }
 
             // Make an actual API call instead of simulating
-            const res = await fetch('/api/me/password', {
+            const res = await fetch('/api/profile/password', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

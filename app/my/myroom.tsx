@@ -50,7 +50,7 @@ export default function MyRoom() {
                     return;
                 }
 
-                const res = await fetch('/api/me/myroom', {
+                const res = await fetch('/api/profile/myroom', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
