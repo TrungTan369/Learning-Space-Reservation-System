@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
         const [rooms, total] = await Promise.all([
             collection
-                .find(query, { projection: { name: 1, coSo: 1, chatLuong: 1, sucChua: 1 } })
+                .find(query, { projection: { name: 1, coSo: 1, chatLuong: 1, sucChua: 1, status: 1 } })
                 .skip(skip)
                 .limit(limit)
                 .toArray(),
@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
             coSo,
             sucChua,
             chatLuong,
+            status: "1"
         };
 
         const result = await rooms.insertOne(newRoom);

@@ -1,4 +1,3 @@
-// File: app/api/checkin/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import jwt from 'jsonwebtoken';
@@ -27,15 +26,23 @@ export async function POST(req: NextRequest) {
         if (!room) return NextResponse.json({ message: 'Không tìm thấy phòng' }, { status: 404 });
 
         const now = new Date();
-        const today = now.toISOString().split('T')[0];
+        const nowDateNum = parseInt(`${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`);
         const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-        const bookings = await db.collection('booking')
-            .find({ roomId: room._id, date: today })
-            .sort({ startTime: 1 })
+        // Lấy tất cả các booking trong tương lai (theo ngày và giờ)
+        const allBookings = await db.collection('booking')
+            .find({ roomId: room._id })
+            .sort({ date: 1, startTime: 1 })
             .toArray();
 
-        const booking = bookings.find((b: any) => b.endTime >= nowMinutes);
+        const booking = allBookings.find((b: any) => {
+            const [day, month, year] = b.date.split('/');
+            const bookingDateNum = parseInt(`${year}${month}${day}`);
+            if (bookingDateNum > nowDateNum) return true;
+            if (bookingDateNum === nowDateNum && b.endTime >= nowMinutes) return true;
+            return false;
+        });
+
         if (!booking) {
             return NextResponse.json({ message: 'Không có lịch đặt nào trong tương lai' }, { status: 404 });
         }

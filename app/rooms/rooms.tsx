@@ -10,6 +10,7 @@ type Room = {
     coSo: string;
     sucChua: string;
     chatLuong: string;
+    status?: string;
 };
 
 type RoomsPageProps = {
@@ -123,6 +124,44 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
         setIsModalOpen(false);
         setSelectedRoom(null);
     };
+    const handleCloseRoom = async (roomId: string) => {
+        const confirmClose = confirm('Bạn có chắc chắn muốn đóng phòng này?');
+        if (!confirmClose) return;
+
+        const res = await fetch(`/api/rooms/close?id=${roomId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert('Đã đóng phòng');
+            location.reload();
+        } else {
+            alert(data.message || 'Đóng phòng thất bại');
+        }
+    };
+    const handleOpenRoom = async (roomId: string) => {
+        const confirmOpen = confirm('Bạn có chắc chắn muốn mở phòng này?');
+        if (!confirmOpen) return;
+
+        const res = await fetch(`/api/rooms/open?id=${roomId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert('Đã mở phòng');
+            location.reload();
+        } else {
+            alert(data.message || 'Mở phòng thất bại');
+        }
+    };
     return (
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-6xl mx-auto">
@@ -155,18 +194,41 @@ export default function RoomsPage({ filters }: RoomsPageProps) {
                                     {chatLuongMap[room.chatLuong] || "Không rõ loại"}
                                 </p>
                                 <div className="flex items-center justify-between gap-2">
-                                    <button
-                                        onClick={() => handleOpenModal(room)}
-                                        className="bg-rose-600 text-white px-4 py-2 rounded-full text-sm cursor-pointer">
-                                        Đặt phòng
-                                    </button>
-                                    {role === 'admin' && (
+                                    {room.status === "1" ? (
                                         <button
-                                            onClick={() => handleDeleteRoom(room._id)}
-                                            className="bg-gray-500 text-white px-3 py-2 rounded-full text-sm hover:bg-gray-600 cursor-pointer"
+                                            onClick={() => handleOpenModal(room)}
+                                            className="bg-rose-600 text-white px-4 py-2 rounded-full text-sm cursor-pointer"
                                         >
-                                            Xóa
+                                            Đặt phòng
                                         </button>
+                                    ) : (
+                                        <span className="text-red-600 font-semibold px-4 py-2">Đã đóng</span>
+                                    )}
+                                    {role === 'admin' && (
+                                        <>
+                                            {room.status === "1" && (
+                                                <button
+                                                    onClick={() => handleCloseRoom(room._id)}
+                                                    className="bg-yellow-500 text-white px-3 py-2 rounded-full text-sm hover:bg-yellow-600 cursor-pointer"
+                                                >
+                                                    Đóng
+                                                </button>
+                                            )}
+                                            {room.status == "0" && (
+                                                <button
+                                                    onClick={() => handleOpenRoom(room._id)}
+                                                    className="bg-green-500 text-white px-3 py-2 rounded-full text-sm hover:bg-green-600 cursor-pointer"
+                                                >
+                                                    Mở
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => handleDeleteRoom(room._id)}
+                                                className="bg-gray-500 text-white px-3 py-2 rounded-full text-sm hover:bg-gray-600 cursor-pointer"
+                                            >
+                                                Xóa
+                                            </button>
+                                        </>
                                     )}
                                 </div>
                             </div>
