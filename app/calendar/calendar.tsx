@@ -1,12 +1,32 @@
 'use client';
-import React from 'react';
-import { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import lunar from 'lunar-calendar';
 
 const Calendar = () => {
     const today = new Date();
     const [month, setMonth] = useState(today.getMonth()); // 0-11
     const [year, setYear] = useState(today.getFullYear());
+    const [bookingDates, setBookingDates] = useState<string[]>([]);
+
+    // Lấy danh sách ngày đặt phòng từ API
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch('/api/profile/myroom', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = await res.json();
+                // Lấy các ngày đặt phòng dạng "dd/mm/yyyy"
+                const dates = data.map((b: any) => b.date);
+                setBookingDates(dates);
+            } catch {
+                setBookingDates([]);
+            }
+        };
+        fetchBookings();
+    }, [month, year]); // <-- Thêm month, year vào dependency
+
     const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -37,26 +57,32 @@ const Calendar = () => {
         days.push(<div key={`empty-${i}`} />);
     }
     for (let d = 1; d <= daysInMonth; d++) {
-        const isToday = d === today.getDate();
+        const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
         const lunarDay = lunar.solarToLunar(year, month + 1, d);
         let content = <span>{d}</span>;
 
         const isTet = lunarDay.lunarMonth === 1 && [1, 2, 3].includes(lunarDay.lunarDay);
 
+        // Định dạng ngày để so với bookingDates
+        const dayStr = d.toString().padStart(2, '0');
+        const monthStr = (month + 1).toString().padStart(2, '0');
+        const dateStr = `${dayStr}/${monthStr}/${year}`;
+
+        const isBooked = bookingDates.includes(dateStr);
+
         if (isTet) {
             content = (
                 <div className="flex flex-col items-center w-full h-full bg-red-400 p-2 rounded-2xl">
                     <strong>{d}</strong>
-                    <img src={"images/baolixi.png"} alt="bao lì xì" className='w-8 h-8'>
-                    </img>
+                    <img src={"images/baolixi.png"} alt="bao lì xì" className='w-8 h-8' />
                     <span className="text-xs text-white font-semibold">Tết Nguyên Đán</span>
                 </div>
             );
-        } else if (d === 20) {
+        } else if (isBooked) {
             content = (
                 <div className="flex flex-col items-center bg-yellow-100 p-2 rounded">
                     <strong>{d}</strong>
-                    <span className="text-xs text-red-600">Đặt phòng 812</span>
+                    <span className="text-xs text-red-600">Đặt phòng</span>
                 </div>
             );
         } else if (isToday) {
@@ -77,6 +103,9 @@ const Calendar = () => {
         );
     }
 
+    // Ngày đặt phòng gần nhất (nếu có)
+    const nextBooking = bookingDates.length > 0 ? bookingDates[0] : null;
+
     return (
         <div className="relative w-full min-h-screen overflow-hidden">
             <video
@@ -91,6 +120,15 @@ const Calendar = () => {
             </video>
 
             <div className="p-6 w-full bg-white/20 backdrop-blur-sm rounded-xl shadow-xl max-w-4xl mx-auto mt-10 ">
+                {/* Thông tin ngày hiện tại và ngày đặt phòng */}
+                <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div className="text-lg font-semibold text-blue-900">
+                        Hôm nay: {today.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </div>
+                    <div className="text-lg font-semibold text-green-700">
+                        {nextBooking ? `Ngày đặt phòng gần nhất: ${nextBooking}` : "Bạn chưa có lịch đặt phòng"}
+                    </div>
+                </div>
                 <div className="flex items-center justify-between mb-4">
                     <button
                         className="bg-purple-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-gray-300"
@@ -133,7 +171,6 @@ const Calendar = () => {
             </div>
         </div>
     );
-
 };
 
 export default Calendar;

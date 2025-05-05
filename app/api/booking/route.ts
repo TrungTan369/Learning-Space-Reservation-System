@@ -41,6 +41,15 @@ export async function POST(req: NextRequest) {
             roomName,
         };
         await db.collection('booking').insertOne(newBooking);
+
+        // Thêm thông báo vào db login, collection noti
+        const loginDb = client.db('login');
+        await loginDb.collection('noti').insertOne({
+            userId: new ObjectId(decoded._id),
+            content: `🎉 Bạn đã đặt phòng ${roomName} thành công!<br>Nhớ checkin <b>15 phút trước</b> giờ đặt phòng bạn nhé! 🕒`,
+            createAt: new Date(),
+        });
+
         return NextResponse.json({ message: "Đặt phòng thành công" });
     } catch (error: any) {
         console.error("Lỗi đặt phòng:", error.message);
