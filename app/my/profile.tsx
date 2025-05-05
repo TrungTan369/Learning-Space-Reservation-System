@@ -11,6 +11,10 @@ export default function Profile() {
         phone: '',
         role: ''
     });
+    const [edit, setEdit] = useState(false);
+    const [form, setForm] = useState({ email: '', birth: '', phone: '' });
+    const [loading, setLoading] = useState(false);
+    const [msg, setMsg] = useState('');
 
     useEffect(() => {
         // Retrieve user data from localStorage
@@ -29,40 +33,31 @@ export default function Profile() {
             phone,
             role
         });
+        setForm({ email, birth, phone });
     }, []);
 
-    // Properly format birth date with error handling
+    // Format birth date
     const getFormattedBirth = () => {
         if (!userData.birth) return 'Chưa cập nhật';
-        
         try {
-            // Try to parse the date - handles ISO format and timestamps
             const date = new Date(userData.birth);
-            
-            // Check if date is valid
             if (isNaN(date.getTime())) {
-                // If not valid, try alternative formats
                 if (userData.birth.includes('/')) {
-                    // Handle DD/MM/YYYY format
                     const [day, month, year] = userData.birth.split('/');
                     return `${day}/${month}/${year}`;
                 }
-                // Return original if we can't parse it
                 return userData.birth;
             }
-            
-            // Format as Vietnamese date
             return date.toLocaleDateString('vi-VN', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric'
             });
-        } catch (error) {
-            console.error("Error formatting date:", error);
+        } catch {
             return userData.birth || 'Chưa cập nhật';
         }
     };
-    
+
     // Map role to Vietnamese
     const roleDisplay = {
         'admin': 'Quản trị viên',
@@ -70,12 +65,56 @@ export default function Profile() {
         'techie': 'Kỹ thuật viên'
     }[userData.role.toLowerCase()] || userData.role;
 
+    // Nếu thiếu thông tin thì tự động cho sửa
+    useEffect(() => {
+        if (!userData.email || !userData.birth || !userData.phone) {
+            setEdit(true);
+        }
+    }, [userData]);
+
+    // Xử lý cập nhật
+    const handleSave = async () => {
+        setLoading(true);
+        setMsg('');
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/profile/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(form)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUserData(prev => ({
+                    ...prev,
+                    email: form.email,
+                    birth: form.birth,
+                    phone: form.phone
+                }));
+                // Lưu lại vào localStorage
+                localStorage.setItem('email', form.email);
+                localStorage.setItem('birth', form.birth);
+                localStorage.setItem('phone', form.phone);
+                setEdit(false);
+                setMsg('Cập nhật thành công!');
+            } else {
+                setMsg(data.message || 'Cập nhật thất bại');
+            }
+        } catch {
+            setMsg('Có lỗi xảy ra!');
+        }
+        setLoading(false);
+    };
+
     return (
         <div className="bg-white rounded-xl shadow-md p-8">
             <div className="flex items-center mb-8 border-b pb-6">
                 <div className="bg-blue-100 p-4 rounded-full mr-6">
-                    <Image 
-                        src="/images/avatar.jpg" 
+                    <Image
+                        src="/images/avatar.jpg"
                         alt="User Avatar"
                         width={80}
                         height={80}
@@ -87,31 +126,97 @@ export default function Profile() {
                     <p className="text-blue-600 font-medium">{roleDisplay}</p>
                 </div>
             </div>
-            
+            {msg && (
+                <div className={`mb-4 px-4 py-2 rounded ${msg.includes('thành công') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {msg}
+                </div>
+            )}
             <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                     <div className="bg-gray-50 p-4 rounded-lg">
                         <label className="block text-sm font-medium text-gray-500 mb-1">Tên đăng nhập</label>
                         <div className="text-gray-900 font-medium">{userData.username || 'Chưa cập nhật'}</div>
                     </div>
-                    
                     <div className="bg-gray-50 p-4 rounded-lg">
                         <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-                        <div className="text-gray-900 font-medium break-words">{userData.email || 'Chưa cập nhật'}</div>
+                        {edit ? (
+                            <input
+                                type="email"
+                                className="border rounded px-2 py-1 w-full"
+                                value={form.email}
+                                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                                placeholder="Nhập email"
+                            />
+                        ) : (
+                            <div className="text-gray-900 font-medium break-words">{userData.email || 'Chưa cập nhật'}</div>
+                        )}
                     </div>
                 </div>
-                
                 <div className="space-y-6">
                     <div className="bg-gray-50 p-4 rounded-lg">
                         <label className="block text-sm font-medium text-gray-500 mb-1">Ngày sinh</label>
-                        <div className="text-gray-900 font-medium">{getFormattedBirth()}</div>
+                        {edit ? (
+                            <input
+                                type="date"
+                                className="border rounded px-2 py-1 w-full"
+                                value={form.birth}
+                                onChange={e => setForm(f => ({ ...f, birth: e.target.value }))}
+                                placeholder="Chọn ngày sinh"
+                            />
+                        ) : (
+                            <div className="text-gray-900 font-medium">{getFormattedBirth()}</div>
+                        )}
                     </div>
-                    
                     <div className="bg-gray-50 p-4 rounded-lg">
                         <label className="block text-sm font-medium text-gray-500 mb-1">Số điện thoại</label>
-                        <div className="text-gray-900 font-medium">{userData.phone || 'Chưa cập nhật'}</div>
+                        {edit ? (
+                            <input
+                                type="tel"
+                                className="border rounded px-2 py-1 w-full"
+                                value={form.phone}
+                                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                                placeholder="Nhập số điện thoại"
+                            />
+                        ) : (
+                            <div className="text-gray-900 font-medium">{userData.phone || 'Chưa cập nhật'}</div>
+                        )}
                     </div>
                 </div>
+            </div>
+            <div className="mt-8 flex gap-4">
+                {edit ? (
+                    <>
+                        <button
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                            onClick={handleSave}
+                            disabled={loading}
+                        >
+                            {loading ? 'Đang lưu...' : 'Lưu'}
+                        </button>
+                        <button
+                            className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition"
+                            onClick={() => {
+                                setEdit(false);
+                                setForm({
+                                    email: userData.email,
+                                    birth: userData.birth,
+                                    phone: userData.phone
+                                });
+                                setMsg('');
+                            }}
+                            disabled={loading}
+                        >
+                            Hủy
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
+                        onClick={() => setEdit(true)}
+                    >
+                        Sửa thông tin
+                    </button>
+                )}
             </div>
         </div>
     );

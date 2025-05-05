@@ -4,20 +4,22 @@ import { useRouter } from "next/navigation";
 import Navbar from "../navbar";
 import Footer from "../footer";
 import Profile from "./profile";
-import Myroom from "./myroom";
+import Booked from "./booked";
 import Security from "./security"
-
+import ControlRoom from "./control";
 export default function MyPage() {
-    const [activeTab, setActiveTab] = useState("myroom");
+    const [activeTab, setActiveTab] = useState("booked");
     const router = useRouter();
     const renderContent = () => {
         switch (activeTab) {
-            case "myroom":
-                return <Myroom />;
+            case "booked":
+                return <Booked />;
             case "profile":
                 return <Profile />;
             case "security":
                 return <Security />;
+            case "control":
+                return <ControlRoom />;
         }
     };
 
@@ -37,10 +39,18 @@ export default function MyPage() {
                         <div
                             className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer ${activeTab === "myroom" ? "bg-blue-100 text-blue-600 font-medium" : ""
                                 }`}
-                            onClick={() => setActiveTab("myroom")}
+                            onClick={() => setActiveTab("booked")}
                         >
                             <span>📘</span>
-                            <span>Phòng của tôi</span>
+                            <span>Phòng đã đặt</span>
+                        </div>
+                        <div
+                            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer ${activeTab === "control" ? "bg-blue-100 text-blue-600 font-medium" : ""
+                                }`}
+                            onClick={() => setActiveTab("control")}
+                        >
+                            <span>📘</span>
+                            <span>Điều khiển phòng</span>
                         </div>
                         <div
                             className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer ${activeTab === "profile" ? "bg-blue-100 text-blue-600 font-medium" : ""

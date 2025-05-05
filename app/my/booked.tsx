@@ -64,119 +64,12 @@ function CameraPopup({ onClose }: { onClose: () => void }) {
     );
 }
 
-function ManageRoomPopup({ onClose, roomName }: { onClose: () => void; roomName: string }) {
-    const [lights, setLights] = useState(Array(8).fill(false));
-    const [acs, setAcs] = useState([false, false]);
-    const [speaker, setSpeaker] = useState(50);
-
-    const toggleLight = (idx: number) => {
-        setLights(lights => lights.map((v, i) => i === idx ? !v : v));
-    };
-    const toggleAc = (idx: number) => {
-        setAcs(acs => acs.map((v, i) => i === idx ? !v : v));
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-8 shadow-2xl relative w-[370px] flex flex-col items-center animate-slideup">
-                <button
-                    className="absolute top-3 right-3 bg-white/80 rounded-full w-10 h-10 flex items-center justify-center text-2xl text-gray-700 hover:text-red-600 hover:bg-white z-10 shadow"
-                    onClick={onClose}
-                    aria-label="Đóng"
-                    style={{ border: 'none' }}
-                >
-                    ×
-                </button>
-                <h2 className="text-2xl font-bold mb-6 text-blue-700">Quản Lí {roomName}</h2>
-                <div className="flex flex-col gap-6 w-full">
-                    <div>
-                        <div className="font-semibold mb-2 flex items-center gap-2 text-yellow-600 text-lg">
-                            <span>💡</span> 8 Bóng đèn
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                            {lights.map((on, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => toggleLight(idx)}
-                                    className={`rounded-full w-12 h-12 flex items-center justify-center text-2xl border transition
-                                        ${on ? 'bg-yellow-300 border-yellow-500 shadow text-yellow-900' : 'bg-gray-100 border-gray-300 text-gray-400'}`}
-                                    aria-label={`Bóng đèn ${idx + 1}`}
-                                >
-                                    💡
-                                    <span className="absolute text-xs font-bold right-2 bottom-2">{idx + 1}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="font-semibold mb-2 flex items-center gap-2 text-blue-600 text-lg">
-                            <span>❄️</span> 2 Máy lạnh
-                        </div>
-                        <div className="flex gap-4">
-                            {acs.map((on, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => toggleAc(idx)}
-                                    className={`rounded-full w-14 h-14 flex flex-col items-center justify-center text-2xl border transition
-                                        ${on ? 'bg-blue-300 border-blue-500 shadow text-blue-900' : 'bg-gray-100 border-gray-300 text-gray-400'}`}
-                                    aria-label={`Máy lạnh ${idx + 1}`}
-                                >
-                                    ❄️
-                                    <span className="text-xs font-bold mt-1">AC{idx + 1}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="font-semibold mb-2 flex items-center gap-2 text-gray-700 text-lg">
-                            <span>🔊</span> Loa (0-100)
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <input
-                                type="range"
-                                min={0}
-                                max={100}
-                                value={speaker}
-                                onChange={e => setSpeaker(Number(e.target.value))}
-                                className="w-40 accent-blue-500"
-                            />
-                            <span className="font-bold text-blue-700">{speaker}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <style jsx global>{`
-                .animate-slideup {
-                    animation: slideup 0.4s cubic-bezier(.4,2,.6,1) both;
-                }
-                @keyframes slideup {
-                    0% { transform: translateY(60px) scale(0.95); opacity: 0; }
-                    100% { transform: translateY(0) scale(1); opacity: 1; }
-                }
-            `}</style>
-        </div>
-    );
-}
-
-export default function MyRoom() {
+export default function Booked() {
     const [bookings, setBookings] = useState<BookingWithRoomDetails[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
     const [showCamera, setShowCamera] = useState(false);
-    const [showManage, setShowManage] = useState(false);
-
-    const checkedInRoom: BookingWithRoomDetails = {
-        _id: 'hardcoded-checkedin',
-        roomId: 'hardcoded-room',
-        roomName: 'H1.101',
-        coSo: '1',
-        chatLuong: '3', // Cao cấp
-        sucChua: '40',
-        date: new Date().toLocaleDateString('vi-VN').split('/').map((v, i, arr) => arr.length === 3 ? v.padStart(2, '0') : v).join('/'),
-        startTime: 8,
-        endTime: 10,
-    };
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -357,68 +250,6 @@ export default function MyRoom() {
 
             {!isLoading && !error && (
                 <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
-                        <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-600 relative">
-                            <div className="absolute top-4 right-4 flex gap-2 z-20">
-                                <span className="px-4 py-2 rounded-full text-sm font-semibold border border-green-600 bg-white/90 text-green-700 shadow">
-                                    Đã checkin
-                                </span>
-                                <button
-                                    onClick={() => setShowManage(true)}
-                                    className="px-4 py-2 rounded-full text-sm font-semibold border border-blue-600 bg-white/90 text-blue-700 shadow hover:bg-blue-50 transition"
-                                >
-                                    Điều khiển phòng
-                                </button>
-                            </div>
-                            <img
-                                src={`/images/room_type_${checkedInRoom.chatLuong}.jpg`}
-                                alt={`Phòng ${checkedInRoom.roomName}`}
-                                className="w-full h-full object-cover opacity-80"
-                            />
-                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                <h3 className="text-2xl font-bold text-white">Phòng {checkedInRoom.roomName}</h3>
-                            </div>
-                        </div>
-                        <div className="p-5">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="flex items-start">
-                                    <Calendar className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                                    <div>
-                                        <p className="text-sm text-gray-500">Ngày đặt</p>
-                                        <p className="font-medium">{formatDate(checkedInRoom.date)}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start">
-                                    <Clock className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                                    <div>
-                                        <p className="text-sm text-gray-500">Thời gian</p>
-                                        <p className="font-medium">{formatTime(checkedInRoom.startTime)} - {formatTime(checkedInRoom.endTime)}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start">
-                                    <MapPin className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                                    <div>
-                                        <p className="text-sm text-gray-500">Cơ sở</p>
-                                        <p className="font-medium">{checkedInRoom.coSo}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start">
-                                    <Users className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                                    <div>
-                                        <p className="text-sm text-gray-500">Sức chứa</p>
-                                        <p className="font-medium">{checkedInRoom.sucChua} người</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mt-4 flex items-center">
-                                <BookOpen className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0" />
-                                <div>
-                                    <p className="text-sm text-gray-500">Chất lượng</p>
-                                    <p className="font-medium">{chatLuongMap[checkedInRoom.chatLuong] || "Không rõ loại"}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     {bookings.map((booking, index) => {
                         const status = getBookingStatus(booking);
                         const checkinAvailable = isCheckinAvailable(booking);
@@ -510,9 +341,6 @@ export default function MyRoom() {
                         );
                     })}
                 </div>
-            )}
-            {showManage && (
-                <ManageRoomPopup onClose={() => setShowManage(false)} roomName={checkedInRoom.roomName} />
             )}
         </div>
     );
