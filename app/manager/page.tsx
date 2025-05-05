@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "../navbar";
 import Footer from "../footer";
 import CheckinPage from "./checkin";
-import ManageUser from "./user";
-import ManageRoom from "./room";
+import ManageUser from "./manageUser";
+import ManageRoom from "./manaeRoom";
 export default function MyPage() {
     const [activeTab, setActiveTab] = useState("checkin");
     const router = useRouter();
@@ -40,7 +40,7 @@ export default function MyPage() {
                             onClick={() => setActiveTab("checkin")}
                         >
                             <span>📘</span>
-                            <span>Quản lí checkin</span>
+                            <span>Quản lí Checkin</span>
                         </div>
                         <div
                             className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer ${activeTab === "manageUser" ? "bg-blue-100 text-blue-600 font-medium" : ""
@@ -56,7 +56,7 @@ export default function MyPage() {
                             onClick={() => setActiveTab("manageRoom")}
                         >
                             <span>🔐</span>
-                            <span>Quản lí phòng</span>
+                            <span>Quản lí Phòng</span>
                         </div>
                     </nav>
                 </div>
