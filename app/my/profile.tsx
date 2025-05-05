@@ -16,24 +16,35 @@ export default function Profile() {
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState('');
 
+    // Initial data loading with API fallback
     useEffect(() => {
-        // Retrieve user data from localStorage
-        const fullname = localStorage.getItem('fullname') || '';
-        const username = localStorage.getItem('username') || '';
-        const email = localStorage.getItem('email') || '';
-        const birth = localStorage.getItem('birth') || '';
-        const phone = localStorage.getItem('phone') || '';
-        const role = localStorage.getItem('userRole') || '';
-
-        setUserData({
-            fullname,
-            username,
-            email,
-            birth,
-            phone,
-            role
-        });
-        setForm({ email, birth, phone });
+        const loadUserData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const userId = localStorage.getItem('userId');
+                
+                if (!token || !userId) return;
+                
+                // Always load from API
+                const res = await fetch('/api/profile/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserData(data);
+                    setForm({
+                        email: data.email || '',
+                        birth: data.birth || '',
+                        phone: data.phone || ''
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        };
+        
+        loadUserData();
     }, []);
 
     // Format birth date
@@ -65,14 +76,18 @@ export default function Profile() {
         'techie': 'Kỹ thuật viên'
     }[userData.role.toLowerCase()] || userData.role;
 
-    // Nếu thiếu thông tin thì tự động cho sửa
+    // Better condition for auto-edit mode
     useEffect(() => {
-        if (!userData.email || !userData.birth || !userData.phone) {
+        // Only auto-enable edit if this is the first login AND fields are missing
+        const isFirstLogin = localStorage.getItem('firstLogin') === 'true';
+        if (isFirstLogin && (!userData.email || !userData.birth || !userData.phone)) {
             setEdit(true);
+            // Mark that we've shown the edit form once
+            localStorage.setItem('firstLogin', 'false');
         }
     }, [userData]);
 
-    // Xử lý cập nhật
+    // Modified save function - don't use localStorage for profile data
     const handleSave = async () => {
         setLoading(true);
         setMsg('');
@@ -94,10 +109,6 @@ export default function Profile() {
                     birth: form.birth,
                     phone: form.phone
                 }));
-                // Lưu lại vào localStorage
-                localStorage.setItem('email', form.email);
-                localStorage.setItem('birth', form.birth);
-                localStorage.setItem('phone', form.phone);
                 setEdit(false);
                 setMsg('Cập nhật thành công!');
             } else {
